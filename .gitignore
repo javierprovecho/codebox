@@ -28,10 +28,14 @@ node_modules
 editor/vendors
 
 # All installed packages
-packages
+packages/*
+!packages/.gitkeep
 
 # Build output
 build
 
 # Tmp directory
 .tmp
+
+# Packages for testing
+test/packages

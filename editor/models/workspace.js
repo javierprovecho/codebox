@@ -1,23 +1,21 @@
 var Q = require("q");
 var _ = require("hr.utils");
 var Model = require("hr.model");
-var logger = require("hr.logger")("users");
+var logger = require("hr.logger")("workspace");
 
 var rpc = require("../core/rpc");
 
-var User = Model.extend({
+var Workspace = Model.extend({
     defaults: {
-        id: null,
-        name: null,
-        email: null,
-        color: null
+        id: "",
+        title: ""
     },
 
-    // Identify the logged in user
-    whoami: function() {
+    // Identify the workspace
+    about: function() {
         var that = this;
 
-        return rpc.execute("users/whoami")
+        return rpc.execute("codebox/about")
         .then(function(data) {
             return that.set(data);
         })
@@ -25,4 +23,4 @@ var User = Model.extend({
     },
 });
 
-module.exports = User;
+module.exports = Workspace;

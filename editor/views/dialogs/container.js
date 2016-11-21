@@ -1,89 +1,104 @@
-define([
-    "hr/utils",
-    "hr/dom",
-    "hr/hr"
-], function(_, $, hr) {
-    var DialogView = hr.View.extend({
-        className: "component-dialog",
-        defaults: {
-            keyboard: true,
-            keyboardEnter: true,
+var _ = require("hr.utils");
+var $ = require("jquery");
+var View = require("hr.view");
 
-            View: hr.View,
-            view: {},
-            size: "medium"
-        },
-        events: {
-            "keydown": "keydown"
-        },
+var DialogView = View.extend({
+    className: "component-dialog",
+    defaults: {
+        keyboard: true,
+        keyboardEnter: true,
 
-        initialize: function(options) {
-            DialogView.__super__.initialize.apply(this, arguments);
+        View: View,
+        view: {},
+        size: "medium"
+    },
+    events: {
+        "click": "onClick",
+        "click .dialog-wrapper": "onWrapperClick",
+        "keydown": "keydown"
+    },
 
-            // Bind keyboard
-            this.keydownHandler = _.bind(this.keydown, this)
-            if (this.options.keyboard) $(document).bind("keydown", this.keydownHandler);
+    initialize: function(options) {
+        DialogView.__super__.initialize.apply(this, arguments);
 
-            // Adapt style
-            this.$el.addClass("size-"+this.options.size);
+        this.$wrapper = $("<div>", {
+            'class': "dialog-wrapper"
+        });
 
-            // Build view
-            this.view = new options.View(this.options.view, this);
-        },
+        // Bind keyboard
+        this.keydownHandler = _.bind(this.keydown, this)
+        if (this.options.keyboard) $(document).bind("keydown", this.keydownHandler);
 
-        render: function() {
-            this.view.render();
-            this.view.appendTo(this);
+        // Adapt style
+        this.$el.addClass("size-"+this.options.size);
 
-            return this.ready();
-        },
+        // Build view
+        this.view = new options.View(this.options.view, this);
+        this.view.appendTo(this.$wrapper);
+        this.$wrapper.appendTo(this.$el);
+    },
 
-        finish: function() {
-            this.open();
-            return DialogView.__super__.finish.apply(this, arguments);
-        },
+    render: function() {
+        this.view.update();
 
-        open: function() {
-            if (DialogView.current != null) DialogView.current.close();
+        return this.ready();
+    },
 
-            this.$el.appendTo($("body"));
-            DialogView.current = this;
+    finish: function() {
+        this.open();
+        return DialogView.__super__.finish.apply(this, arguments);
+    },
 
-            this.trigger("open");
+    open: function() {
+        if (DialogView.current != null) DialogView.current.close();
 
-            return this;
-        },
+        this.$el.appendTo($("body"));
+        DialogView.current = this;
 
-        close: function(e, force) {
-            if (e) e.preventDefault();
+        this.trigger("open");
 
-            // Unbind document keydown
-            $(document).unbind("keydown", this.keydownHandler);
+        return this;
+    },
 
-            // Hide modal
-            this.trigger("close", force);
-            this.remove();
+    close: function(e, force) {
+        if (e) e.preventDefault();
 
-            DialogView.current = null;
-        },
+        // Unbind document keydown
+        $(document).unbind("keydown", this.keydownHandler);
 
-        keydown: function(e) {
-            if (!this.options.keyboard) return;
+        // Hide modal
+        this.trigger("close", force);
+        this.remove();
 
-            var key = e.keyCode || e.which;
+        DialogView.current = null;
+    },
 
-            // Enter: valid
-            if (key == 13 && this.options.keyboardEnter) {
-                this.close(e);
-            } else
-            // Esc: close
-            if (key == 27) {
-                this.close(e, true);
-            }
+    keydown: function(e) {
+        if (!this.options.keyboard) return;
+
+        var key = e.keyCode || e.which;
+
+        // Enter: valid
+        if (key == 13 && this.options.keyboardEnter) {
+            this.close(e);
+        } else
+        // Esc: close
+        if (key == 27) {
+            this.close(e, true);
         }
-    }, {
-        current: null,
-    });
+    },
 
-    return DialogView;
+    onWrapperClick: function(e) {
+        e.stopPropagation();
+    },
+    onClick: function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+
+        this.close(null, true);
+    }
+}, {
+    current: null,
 });
+
+module.exports = DialogView;

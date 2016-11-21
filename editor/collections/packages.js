@@ -1,22 +1,30 @@
-define([
-    "hr/hr",
-    "hr/utils",
-    "hr/promise",
-    "models/package",
-    "core/rpc"
-], function(hr, _, Q, Package, rpc) {
-    var Packages = hr.Collection.extend({
-        model: Package,
+var Q = require("q");
+var _ = require("hr.utils");
+var $ = require("jquery");
+var Collection = require("hr.collection");
+var logger = require("hr.logger")("packages");
 
-        listAll: function() {
-            return rpc.execute("packages/list")
-            .then(this.reset.bind(this));
-        },
+var Package = require("../models/package");
+var rpc = require("../core/rpc");
 
-        loadAll: function() {
-            var that = this;
-            var errors = [];
 
+var Packages = Collection.extend({
+    model: Package,
+
+    // Get packages list from backend
+    listAll: function() {
+        return rpc.execute("packages/list")
+        .then(this.reset.bind(this));
+    },
+
+    // Load all plugins from backend (using bundle)
+    loadAll: function(bundle) {
+        var that = this;
+        var errors = [];
+
+        if (bundle) {
+            return Q($.getScript("/packages.js"));
+        } else {
             return this.listAll()
             .then(function() {
                 return that.reduce(function(prev, pkg) {
@@ -45,7 +53,7 @@ define([
                 }
             });
         }
-    });
-
-    return Packages;
+    }
 });
+
+module.exports = Packages;
