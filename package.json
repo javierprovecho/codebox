@@ -90,7 +90,7 @@
         "tabs": "CodeboxIDE/package-tabs",
         "editor": "CodeboxIDE/package-editor",
         "editorsync": "CodeboxIDE/package-editorsync",
-        "terminal": "CodeboxIDE/package-terminal",
+        "terminal": "javierprovecho/package-terminal",
         "pkgcontrol": "CodeboxIDE/package-pkgcontrol",
         "statusbar": "CodeboxIDE/package-statusbar",
         "watcher": "CodeboxIDE/package-watcher",
