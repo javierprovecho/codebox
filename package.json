@@ -100,7 +100,7 @@
         "settings": "CodeboxIDE/package-settings",
         "menubar": "CodeboxIDE/package-menubar",
         "image": "CodeboxIDE/package-image",
-        "ctags": "CodeboxIDE/package-ctags"
+        "ctags": "javierprovecho/package-ctags"
     },
     "scripts": {
         "test": "export TESTING=true; mocha --reporter list"
